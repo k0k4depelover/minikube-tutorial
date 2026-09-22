@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial: Instalación de Minikube en Arch Linux</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container">
+      <span class="badge">Arch Linux & Kubernetes</span>
+      <h1>Instalación de Minikube en Arch Linux</h1>
+      <p class="subtitle">Guía paso a paso para configurar tu clúster local de pruebas con Docker y kubectl.</p>
+    </div>
+  </header>
+
+  <main class="container content">
+
+    <!-- Requisitos -->
+    <section class="card">
+      <h2>Requisitos Previos</h2>
+      <p>Asegúrate de que tu procesador soporte virtualización ejecutando:</p>
+      <pre><code>grep -E --color 'vmx|svm' /proc/cpuinfo</code></pre>
+      <p>Si la salida muestra coincidencias en texto coloreado, la virtualización por hardware está habilitada.</p>
+    </section>
+
+    <!-- Paso 1 -->
+    <section class="card">
+      <div class="step-num">01</div>
+      <h2>Instalar el Driver (Docker)</h2>
+      <p>Minikube necesita un hipervisor o gestor de contenedores. En Arch Linux, Docker es la opción más sencilla y recomendada:</p>
+      <pre><code>sudo pacman -S docker
+sudo systemctl enable --now docker.service
+sudo usermod -aG docker $USER</code></pre>
+      <div class="callout warning">
+        <strong>Importante:</strong> Cierra sesión y vuelve a iniciarla (o ejecuta <code>newgrp docker</code>) para aplicar los permisos de grupo sin necesidad de usar <code>sudo</code>.
+      </div>
+    </section>
+
+    <!-- Paso 2 -->
+    <section class="card">
+      <div class="step-num">02</div>
+      <h2>Instalar Minikube y Kubectl</h2>
+      <p>Tanto <code>minikube</code> como <code>kubectl</code> están disponibles en los repositorios oficiales de Arch Linux:</p>
+      <pre><code>sudo pacman -S minikube kubectl</code></pre>
+      <p>Opcionalmente, puedes activar el autocompletado en tu terminal (Bash):</p>
+      <pre><code>echo 'source &lt;(kubectl completion bash)&gt;' &gt;&gt; ~/.bashrc
+echo 'source &lt;(minikube completion bash)&gt;' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+    </section>
+
+    <!-- Paso 3 -->
+    <section class="card">
+      <div class="step-num">03</div>
+      <h2>Iniciar el Clúster</h2>
+      <p>Inicia Minikube especificando Docker como el controlador por defecto:</p>
+      <pre><code>minikube start --driver=docker</code></pre>
+      <p>Para dejar Docker configurado como driver predeterminado para futuras sesiones:</p>
+      <pre><code>minikube config set driver docker</code></pre>
+    </section>
+
+    <!-- Paso 4 -->
+    <section class="card">
+      <div class="step-num">04</div>
+      <h2>Verificar el Estado</h2>
+      <p>Comprueba que los nodos y componentes del clúster estén en estado <em>Ready</em>:</p>
+      <pre><code>minikube status
+kubectl get nodes</code></pre>
+    </section>
+
+    <!-- Paso 5: Despliegue -->
+    <section class="card">
+      <div class="step-num">05</div>
+      <h2>Desplegar una Web Estática (Opcional)</h2>
+      <p>Para probar que todo funciona, crea un despliegue de Nginx y expón su servicio en el clúster:</p>
+      <pre><code>kubectl create deployment web-demo --image=nginx
+kubectl expose deployment web-demo --type=NodePort --port=80
+minikube service web-demo</code></pre>
+      <p>El último comando abrirá automáticamente tu navegador apuntando a la IP y puerto expuestos.</p>
+    </section>
+
+    <!-- Comandos Útiles -->
+    <section class="card">
+      <h2>Comandos Frecuentes de Gestión</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Acción</th>
+              <th>Comando</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Abrir panel gráfico web</td>
+              <td><code>minikube dashboard</code></td>
+            </tr>
+            <tr>
+              <td>Pausar el clúster</td>
+              <td><code>minikube stop</code></td>
+            </tr>
+            <tr>
+              <td>Reanudar el clúster</td>
+              <td><code>minikube start</code></td>
+            </tr>
+            <tr>
+              <td>Eliminar el clúster</td>
+              <td><code>minikube delete</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Documentación generada para clústeres locales en Arch Linux.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
